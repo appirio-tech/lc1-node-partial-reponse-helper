@@ -1,0 +1,35 @@
+{
+  "name": "serenity-partial-response-helper",
+  "description": "Common route helper module for serenity applications",
+  "version": "0.0.1",
+  "author": "spanhawk",
+  "contributors": [],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/spanhawk/serenity-route-helper.git"
+  },
+  "homepage": "https://github.com/riteshsangwan",
+  "keywords": [
+    "serenity"
+  ],
+  "dependencies": {
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.10.0",
+    "load-grunt-tasks": "^0.4.0",
+    "grunt-env": "^0.4.1",
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {
+    "grunt-mocha-test": "^0.10.2",
+    "mocha": "1.21.4",
+    "should": "^4.4.4"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "files": [
+    "Readme.md",
+    "index.js"
+  ],
+  "scripts": {}
+}
