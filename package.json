@@ -18,7 +18,8 @@
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-env": "^0.4.1",
     "load-grunt-tasks": "^0.4.0",
-    "lodash": "^2.4.1"
+    "lodash": "^2.4.1",
+    "serenity-datasource": "git+ssh://git@gitlab.com:spanhawk/serenity-datasource.git"
   },
   "devDependencies": {
     "grunt-mocha-test": "^0.10.2",
