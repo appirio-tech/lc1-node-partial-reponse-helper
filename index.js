@@ -224,16 +224,16 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
                 callback(null);
               }else if(_hasMany(Model, key)){
                 var modelName = inflection.capitalize(inflection.singularize(key));
-                if(!dataSource_.getDataSource()[modelName]){
+                if(!dataSource_[modelName]){
                   modelName = inflection.camelize( inflection.underscore(key) ).slice(0, -1);
                 }
 
                 var foreignKey = Model.name.toLowerCase() + 'Id';
                 var filter = {};
                 filter[foreignKey] = entity.id;
-                dataSource_.getDataSource()[modelName].findAll({where: filter}).success(function(entities){
+                dataSource_[modelName].findAll({where: filter}).success(function(entities){
                   reducedObject[key] = entities;
-                  recursionReduce(req, dataSource_.getDataSource()[modelName], reducedObject, key, Fields[key], callback);
+                  recursionReduce(req, dataSource_[modelName], reducedObject, key, Fields[key], callback);
                 }).error(function(err) {
                   reducedObject[key] = [];
                   callback(err);
@@ -246,9 +246,9 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
                 }else{
                   var filterOne = {};
                   filterOne.id = entity[reference[1]];
-                  dataSource_.getDataSource()[reference[0]].find({where: filterOne}).success(function(entity){
+                  dataSource_[reference[0]].find({where: filterOne}).success(function(entity){
                     reducedObject[key] = entity;
-                    recursionReduce(req, dataSource_.getDataSource()[reference[0]], reducedObject, key, Fields[key], callback);
+                    recursionReduce(req, dataSource_[reference[0]], reducedObject, key, Fields[key], callback);
                   }).error(function(err){
                     callback(err);
                   });
@@ -289,16 +289,16 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
             callback(null);
           }else if(_hasMany(Model, key)){
             var modelName = inflection.capitalize(inflection.singularize(key));
-            if(!dataSource_.getDataSource()[modelName]){
+            if(!dataSource_[modelName]){
               modelName = inflection.camelize( inflection.underscore(key) ).slice(0, -1);
             }
 
             var foreignKey = Model.name.toLowerCase() + 'Id';
             var filter = {};
             filter[foreignKey] = subObject.id;
-            dataSource_.getDataSource()[modelName].findAll({where: filter}).success(function(entities){
+            dataSource_[modelName].findAll({where: filter}).success(function(entities){
               reducedObject[key] = entities;
-              recursionReduce(req, dataSource_.getDataSource()[modelName], reducedObject, key, Fields[key], callback);
+              recursionReduce(req, dataSource_[modelName], reducedObject, key, Fields[key], callback);
             }).error(function(err){
               reducedObject[key] = [];
               callback(err);
@@ -311,9 +311,9 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
             }else{
               var filterOne = {};
               filterOne.id = subObject[reference[1]];
-              dataSource_.getDataSource()[reference[0]].find({where: filterOne}).success(function(entity){
+              dataSource_[reference[0]].find({where: filterOne}).success(function(entity){
                 reducedObject[key] = entity;
-                recursionReduce(req, dataSource_.getDataSource()[reference[0]], reducedObject, key, Fields[key], callback);
+                recursionReduce(req, dataSource_[reference[0]], reducedObject, key, Fields[key], callback);
               }).error(function(err){
                 callback(err);
               });
