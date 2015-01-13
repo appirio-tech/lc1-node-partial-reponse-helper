@@ -6,9 +6,9 @@
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/spanhawk/serenity-route-helper.git"
+    "url": "https://github.com/riteshsangwan/serenity-partial-response-helper.git"
   },
-  "homepage": "https://github.com/riteshsangwan",
+  "homepage": "https://github.com/riteshsangwan/serenity-partial-response-helper",
   "keywords": [
     "serenity"
   ],
@@ -18,13 +18,9 @@
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-env": "^0.4.1",
     "load-grunt-tasks": "^0.4.0",
-    "lodash": "^2.4.1",
-    "serenity-datasource": "git+ssh://git@gitlab.com:spanhawk/serenity-datasource.git"
+    "lodash": "^2.4.1"
   },
   "devDependencies": {
-    "grunt-mocha-test": "^0.10.2",
-    "mocha": "1.21.4",
-    "should": "^4.4.4"
   },
   "engines": {
     "node": ">= 0.10.0"
