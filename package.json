@@ -29,6 +29,7 @@
     "node": ">= 0.10.0"
   },
   "files": [
+    "errors/",
     "Readme.md",
     "index.js"
   ],
