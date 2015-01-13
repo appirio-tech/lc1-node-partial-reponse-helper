@@ -348,7 +348,7 @@ PartialResponse.prototype.parseFields = function (req, res, next) {
       error = new ValidationError('Fields parameter is not allowed for ' + req.method + ' call.');
       return next(error);
     } else {
-      iterationParse(req, param, fields, next);
+      iterationParse(req, param, fields, null, next);
     }
     //append to req object
     req.partialResponse = fields;
@@ -363,3 +363,8 @@ PartialResponse.prototype.reduceFieldsAndExpandObject = function(Model, req, nex
     recursionReduce(req, Model, req.data, 'content', req.partialResponse, next);
   }
 };
+
+/**
+ * Module exports
+ */
+module.exports = PartialResponse;
