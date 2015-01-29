@@ -24,8 +24,8 @@ Error conditions has to be handled by application.
 ## How to use?
 
 ```
-var serenityResponseHelper = require('serenity-partial-response-helper');
-var serenityDatasource = require('serenity-datasource');
+var serenityResponseHelper = require('lc1-node-partial-reponse-helper');
+var serenityDatasource = require('lc1-node-datasource');
 // For serenity datasource configuration see serenity module docs
 var config = require('config');
 var datasource = new serenityDatasource(config);
