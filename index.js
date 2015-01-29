@@ -9,7 +9,7 @@
 var _ = require('lodash');
 var async = require('async');
 var inflection = require('inflection');
-var ValidationError = require('./errors/ValidationError');
+var errors = require('common-errors');
 var dataSource_ = null;
 
 /**
@@ -52,7 +52,7 @@ function findRightBracket(req, string, next) {
   for (var i = 0; i < string.length; i += 1) {
     if (string[i] === ')') {
       if (i === 0) {
-        error = new ValidationError('Fields parameter cannot take empty object ().');
+        error = new errors.ValidationError('Fields parameter cannot take empty object ().');
         return next(error);
       }
       if (count === 0) {
@@ -65,7 +65,7 @@ function findRightBracket(req, string, next) {
       count += 1;
     }
   }
-  error = new ValidationError('Fields parameter must take entire pair of \'()\'.');
+  error = new errors.ValidationError('Fields parameter must take entire pair of \'()\'.');
   next(error);
 }
 
@@ -93,13 +93,13 @@ function iterationParse(req, param, entity, property, next) {
         subObject[cache] = true;
         cache = '';
       } else {
-        error = new ValidationError('Fields parameter cannot end up with a \'' + param[i] + '\' .');
+        error = new errors.ValidationError('Fields parameter cannot end up with a \'' + param[i] + '\' .');
         return next(error);
       }
       return;
     } else if (param[i] === ',') {
       if (i === 0) {
-        error = new ValidationError('Fields parameter cannot start with a \',\' .');
+        error = new errors.ValidationError('Fields parameter cannot start with a \',\' .');
         return next(error);
       }
       subObject[cache] = true;
@@ -113,13 +113,13 @@ function iterationParse(req, param, entity, property, next) {
       i = rightPos + 1;
       if (param[i]) {
         if (param[i] === ')') {
-          error = new ValidationError('Fields parameter must take entire pair of \'()\' .');
+          error = new errors.ValidationError('Fields parameter must take entire pair of \'()\' .');
           return next(error);
         } else if (!allowedCharacter(param[i])) {
-          error = new ValidationError('Fields parameter cannot contain character \'' + param[i] + '\' .');
+          error = new errors.ValidationError('Fields parameter cannot contain character \'' + param[i] + '\' .');
           return next(error);
         } else if (param[i] !== ',') {
-          error = new ValidationError('Fields parameter format error.');
+          error = new errors.ValidationError('Fields parameter format error.');
           return next(error);
         }
       }
@@ -127,7 +127,7 @@ function iterationParse(req, param, entity, property, next) {
       if (allowedCharacter(param[i])) {
         cache += param[i];
       } else {
-        error = new ValidationError('Fields parameter cannot contain character \'' + param[i] + '\' .');
+        error = new errors.ValidationError('Fields parameter cannot contain character \'' + param[i] + '\' .');
         return next(error);
       }
     }
@@ -241,7 +241,7 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
               }else{
                 var reference = _hasForeignKey(Model, key);
                 if(!reference){
-                  error = new ValidationError(Model.name+' doesn\'t has ' + key);
+                  error = new errors.ValidationError(Model.name+' doesn\'t has ' + key);
                   callback(error);
                 }else{
                   var filterOne = {};
@@ -306,7 +306,7 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
           } else{
             var reference = _hasForeignKey(Model, key);
             if(!reference){
-              error = new ValidationError(Model.name+' doesn\'t has ' + key);
+              error = new errors.ValidationError(Model.name+' doesn\'t has ' + key);
               callback(error);
             }else{
               var filterOne = {};
@@ -345,7 +345,7 @@ PartialResponse.prototype.parseFields = function (req, res, next) {
     param = param.trim();
     var fields = {};
     if (req.method !== 'GET') {
-      error = new ValidationError('Fields parameter is not allowed for ' + req.method + ' call.');
+      error = new errors.ValidationError('Fields parameter is not allowed for ' + req.method + ' call.');
       return next(error);
     } else {
       iterationParse(req, param, fields, null, next);
