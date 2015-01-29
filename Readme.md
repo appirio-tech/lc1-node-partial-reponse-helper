@@ -12,7 +12,7 @@ It is implemented based on google partial response [spec](https://developers.goo
 Install via npm and git
 
 ```
-npm install git+https://github.com/riteshsangwan/serenity-partial-response-helper.git
+npm install git+https://github.com/appirio-tech/lc1-node-partial-reponse-helper.git
 ```
 
 ## Configuration
