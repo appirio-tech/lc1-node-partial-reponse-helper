@@ -17,7 +17,7 @@ var dataSource_ = null;
  */
 function PartialResponse(datasource) {
   if(_.isUndefined(datasource)) {
-    throw new Error('datasource should be defined');
+    throw new errors.ArgumentNullError('datasource');
   }
   dataSource_ = datasource;
 }
