@@ -18,16 +18,15 @@
     "grunt-cli": "^0.1.13",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-env": "^0.4.1",
+    "inflection": "^1.5.3",
     "load-grunt-tasks": "^0.4.0",
     "lodash": "^2.4.1"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "engines": {
     "node": ">= 0.10.0"
   },
   "files": [
-    "errors/",
     "Readme.md",
     "index.js"
   ],
