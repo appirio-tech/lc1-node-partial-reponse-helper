@@ -150,25 +150,25 @@ function _hasKey(Model, key){
 }
 
 /**
- * If Model has many models, return true. Otherwise false.
+ * If Model has many models, return the Association definition. Otherwise null.
  * Support caml-case item: Model Scorecard, models: scorecardItems
  * @param Model
  * @param models
  */
-function _hasMany(Model, models){
-  var has = false;
+function _findHasManyAssociation(Model, models){
+  var result = null;
   _.forEach(Model.associations, function (association) {
     if ( (association.as === models ||
             models === inflection.camelize(association.as, true) ) &&
       association.associationType === 'HasMany') {
-        has = true;
+      result = association;
     }
   });
-  return has;
+  return result;
 }
 
 /**
- * IF Model has this foreign key, return reference Model Name and foreignKey. Otherwise false.
+ * If Model has this foreign key, return reference Model Name and foreignKey. Otherwise null.
  * This depends on the the sequelize model definition.
  * Model.belongsTo(FatherModel, {foreignKey: key})
  * @param Model
@@ -201,7 +201,6 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
   var error = null;
   var subObject = Entity[Property];
   if(_.isArray(subObject)){
-
     var tasks = [];
     var index=-1;
     _.forEach(subObject, function(entity){
@@ -222,36 +221,33 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
               if(_hasKey(Model, key)){
                 reducedObject[key] = entity.values[key];
                 callback(null);
-              }else if(_hasMany(Model, key)){
-                var modelName = inflection.capitalize(inflection.singularize(key));
-                if(!dataSource_[modelName]){
-                  modelName = inflection.camelize( inflection.underscore(key) ).slice(0, -1);
-                }
-
-                var foreignKey = Model.name.toLowerCase() + 'Id';
-                var filter = {};
-                filter[foreignKey] = entity.id;
-                dataSource_[modelName].findAll({where: filter}).success(function(entities){
-                  reducedObject[key] = entities;
-                  recursionReduce(req, dataSource_[modelName], reducedObject, key, Fields[key], callback);
-                }).error(function(err) {
-                  reducedObject[key] = [];
-                  callback(err);
-                });
-              }else{
-                var reference = _hasForeignKey(Model, key);
-                if(!reference){
-                  error = new errors.ValidationError(Model.name+' doesn\'t has ' + key);
-                  callback(error);
-                }else{
-                  var filterOne = {};
-                  filterOne.id = entity[reference[1]];
-                  dataSource_[reference[0]].find({where: filterOne}).success(function(entity){
-                    reducedObject[key] = entity;
-                    recursionReduce(req, dataSource_[reference[0]], reducedObject, key, Fields[key], callback);
-                  }).error(function(err){
+              } else {
+                var association = _findHasManyAssociation(Model, key);
+                if (association) {
+                  var filter = {};
+                  filter[association.identifier] = entity.id;
+                  dataSource_[association.target.name].findAll({where: filter}).success(function(entities){
+                    reducedObject[key] = entities;
+                    recursionReduce(req, dataSource_[association.target.name], reducedObject, key, Fields[key], callback);
+                  }).error(function(err) {
+                    reducedObject[key] = [];
                     callback(err);
                   });
+                }else{
+                  var reference = _hasForeignKey(Model, key);
+                  if(!reference){
+                    error = new errors.ValidationError(association.target.name+' doesn\'t has ' + key);
+                    callback(error);
+                  }else{
+                    var filterOne = {};
+                    filterOne.id = entity[reference[1]];
+                    dataSource_[reference[0]].find({where: filterOne}).success(function(entity){
+                      reducedObject[key] = entity;
+                      recursionReduce(req, dataSource_[reference[0]], reducedObject, key, Fields[key], callback);
+                    }).error(function(err){
+                      callback(err);
+                    });
+                  }
                 }
               }
             });
@@ -271,7 +267,6 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
       callback();
     });
   }else{
-
     var reducedObject = {};
     var tasksC = [];
 
@@ -287,36 +282,33 @@ function recursionReduce(req, Model, Entity, Property, Fields, callback){
           if(_hasKey(Model, key)){
             reducedObject[key] = subObject.values[key];
             callback(null);
-          }else if(_hasMany(Model, key)){
-            var modelName = inflection.capitalize(inflection.singularize(key));
-            if(!dataSource_[modelName]){
-              modelName = inflection.camelize( inflection.underscore(key) ).slice(0, -1);
-            }
-
-            var foreignKey = Model.name.toLowerCase() + 'Id';
-            var filter = {};
-            filter[foreignKey] = subObject.id;
-            dataSource_[modelName].findAll({where: filter}).success(function(entities){
-              reducedObject[key] = entities;
-              recursionReduce(req, dataSource_[modelName], reducedObject, key, Fields[key], callback);
-            }).error(function(err){
-              reducedObject[key] = [];
-              callback(err);
-            });
-          } else{
-            var reference = _hasForeignKey(Model, key);
-            if(!reference){
-              error = new errors.ValidationError(Model.name+' doesn\'t has ' + key);
-              callback(error);
-            }else{
-              var filterOne = {};
-              filterOne.id = subObject[reference[1]];
-              dataSource_[reference[0]].find({where: filterOne}).success(function(entity){
-                reducedObject[key] = entity;
-                recursionReduce(req, dataSource_[reference[0]], reducedObject, key, Fields[key], callback);
+          } else {
+            var association = _findHasManyAssociation(Model, key);
+            if (association) {
+              var filter = {};
+              filter[association.identifier] = subObject.id;
+              dataSource_[association.target.name].findAll({where: filter}).success(function(entities){
+                reducedObject[key] = entities;
+                recursionReduce(req, dataSource_[association.target.name], reducedObject, key, Fields[key], callback);
               }).error(function(err){
+                reducedObject[key] = [];
                 callback(err);
               });
+            } else{
+              var reference = _hasForeignKey(Model, key);
+              if(!reference){
+                error = new errors.ValidationError(association.target.name+' doesn\'t has ' + key);
+                callback(error);
+              }else{
+                var filterOne = {};
+                filterOne.id = subObject[reference[1]];
+                dataSource_[reference[0]].find({where: filterOne}).success(function(entity){
+                  reducedObject[key] = entity;
+                  recursionReduce(req, dataSource_[reference[0]], reducedObject, key, Fields[key], callback);
+                }).error(function(err){
+                  callback(err);
+                });
+              }
             }
           }
         });
