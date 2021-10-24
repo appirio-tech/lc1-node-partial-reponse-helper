@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "async": "^0.9.0",
-    "common-errors": "^0.4.18",
+    "common-errors": "^0.5.7",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-env": "^0.4.1",
